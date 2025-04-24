@@ -447,7 +447,7 @@ class ImageContainerRegistry: @unchecked Sendable {
         // docker.io uses auth.docker.io for authentication and registry-1.docker.io for pushing
         if registry == "docker.io" {
             self.authRegistry = "auth.docker.io"
-            self.serviceRegistry = "registry.docker.io"
+            self.serviceRegistry = "registry-1.docker.io"
             self.registry = "registry-1.docker.io"
         }
 
