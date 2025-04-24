@@ -413,7 +413,8 @@ actor TaskCounter {
 }
 
 class ImageContainerRegistry: @unchecked Sendable {
-    private let registry: String
+    private var registry: String
+    private var authRegistry: String
     private let organization: String
     private let downloadProgress = ProgressTracker()  // Renamed for clarity
     private let uploadProgress = UploadProgressTracker()  // Added upload tracker
@@ -439,6 +440,14 @@ class ImageContainerRegistry: @unchecked Sendable {
 
     init(registry: String, organization: String) {
         self.registry = registry
+        self.authRegistry = registry
+        // handle for docker.io
+        // docker.io uses auth.docker.io for authentication and registry-1.docker.io for pushing
+        if registry == "docker.io" {
+            self.authRegistry = "auth.docker.io"
+            self.registry = "registry-1.docker.io"
+        }
+
         self.organization = organization
 
         // Get cache directory from settings
@@ -1704,7 +1713,7 @@ class ImageContainerRegistry: @unchecked Sendable {
 
         let url = URL(
             string:
-                "https://\(self.registry)/token?scope=repository:\(encodedRepo):\(scopeString)&service=\(self.registry)"
+                "https://\(self.authRegistry)/token?scope=repository:\(encodedRepo):\(scopeString)&service=\(self.registry)"
         )!
 
         var request = URLRequest(url: url)
