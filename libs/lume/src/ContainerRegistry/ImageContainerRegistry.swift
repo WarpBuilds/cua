@@ -1710,6 +1710,7 @@ class ImageContainerRegistry: @unchecked Sendable {
         -> String
     {
         let encodedRepo = repository.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+        let (username, password) = getCredentialsFromEnvironment()
 
         // Build scope string from scopes array
         let scopeString = scopes.joined(separator: ",")
@@ -1721,6 +1722,13 @@ class ImageContainerRegistry: @unchecked Sendable {
 
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
+
+        // TODO: logic might need limiting to docker.io
+        if let user = username, let pass = password {
+            let basicAuth = "\(user):\(pass)"
+            let authData = basicAuth.data(using: .utf8)!.base64EncodedString()
+            request.setValue("Basic \(authData)", forHTTPHeaderField: "Authorization")
+        }
 
         let session = URLSession.shared
         let (data, response) = try await session.data(for: request)
