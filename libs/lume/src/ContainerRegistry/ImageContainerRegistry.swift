@@ -2558,6 +2558,7 @@ class ImageContainerRegistry: @unchecked Sendable {
         if !dryRun {
             Logger.info("Getting registry authentication token")
             token = try await getToken(repository: "\(self.organization)/\(imageName)")
+            Logger.info("Got authentication token: \(token)")
         } else {
             Logger.info("Dry run mode: skipping authentication token request")
         }
